@@ -14,6 +14,6 @@ app.get('/images', async (req, res) => {
 });
 
 
-app.listen(80, function() {
-    console.log('listening on 8080')
+app.listen(5000, function() {
+    console.log('listening on 5000')
 })
