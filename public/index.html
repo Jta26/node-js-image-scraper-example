@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <title>img test</title>
+</head>
+<body class='container-fluid'>
+    <div style='width: 500px; margin: auto; margin-top: 200px; margin-bottom: 10px;'>
+        <h1>Search For Some Images</h1>
+        <input id='searchBox' type='text' placeholder="Something..." class='form-control'>
+        <div id='loading' style='width: 50%; text-align: center; margin: auto;'>
+            <img src='/loading.gif'>
+        </div>
+    </div>
+    <div id='img-container'>
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+</body>
+
+<script>
+
+//get the object from the document based on ID.
+let searchBox = document.querySelector('#searchBox');
+let loading = document.querySelector('#loading');
+let imgContainer = document.querySelector('#img-container');
+loading.style.display = 'none';
+//Add the event listen, e.g. Do this everytime this event happens
+
+let CallAPIForImages = debounce(function() {
+    //fetch the api for the images.
+    loading.style.display = 'block';
+    imgContainer.innerHTML = '';
+    fetch('/images?toSearch=' + searchBox.value)
+    .then(res => {
+        //get the json payload from the fetch response
+        console.log(res);
+        loading.style.display = 'none';
+        return res.json()
+    })
+    .then(json => {
+        for (let img of json.imgs) {
+            AddImageToDOM(img);
+        }
+    });
+}, 350);
+
+searchBox.addEventListener('keyup', CallAPIForImages);
+
+function AddImageToDOM(imgUrl) {
+    let newImg = document.createElement('img');
+    newImg.src = imgUrl;
+
+    imgContainer.appendChild(newImg);
+}
+
+//prevents calling to the the function passed in until it hasn't been called for 'toWait' time.
+function debounce(func, toWait) {
+    let timeout;
+    return function isCalled() {
+        let context = this;
+        let args = arguments;
+
+        let toCallLater = function() {
+            timeout = null;
+            func.apply(context, args);
+        }
+        clearTimeout(timeout);
+        timeout = setTimeout(toCallLater, toWait);
+
+    }
+
+}
+
+</script>
+</html>
