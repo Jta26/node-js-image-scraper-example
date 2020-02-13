@@ -14,6 +14,6 @@ app.get('/images', async (req, res) => {
 });
 
 
-app.listen(5000, function() {
-    console.log('listening on 5000')
+app.listen(process.env.PORT || 5000, function() {
+    console.log('listening on ' + process.env.PORT || 5000);
 })
